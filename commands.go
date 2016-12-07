@@ -30,7 +30,7 @@ var cmdGenerate = &cobra.Command{
 
 func generateRun(cmd *cobra.Command, args []string) {
 	log.Println("Creating a template")
-	parser(CfgFile)
+	yamlParser(CfgFile)
 }
 
 var cmdDeploy = &cobra.Command{
@@ -41,7 +41,7 @@ var cmdDeploy = &cobra.Command{
 
 func deployRun(cmd *cobra.Command, args []string) {
 	log.Println("Deploying a template")
-	parser(CfgFile)
+	yamlParser(CfgFile)
 }
 
 var cmdTerminate = &cobra.Command{
@@ -52,5 +52,5 @@ var cmdTerminate = &cobra.Command{
 
 func terminateRun(cmd *cobra.Command, args []string) {
 	log.Println("Terminating the stack")
-	parser(CfgFile)
+	yamlParser(CfgFile)
 }

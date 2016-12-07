@@ -4,7 +4,17 @@
 # every other. 
 region: "eu-central-1"
 
-# required: specify the name of the stack
+# Required: specify the name of the stack
 # (bora will look for a template under templates/
 # that matches the stack name
 stackname: "test-sqs-thingy"
+
+# Stack-specific variables
+# You can define arbitrary keys in here, 
+# *except* for the top-level CF key, which 
+# bora requires. 
+CF:
+  Queue:
+    Names:
+      - "pierwsza"
+      - "druga"
