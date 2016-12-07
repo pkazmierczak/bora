@@ -1,8 +1,10 @@
-vaultName: test_vault
-s3bucket: firn-test
+# Specify the AWS region code
+# bora will attempt to get it from AWS configuration
+# or from the environment. This setting overrides
+# every other. 
 region: "eu-central-1"
 
-# optional
-directories_to_skip: "none"
-files_to_skip: "*.pdf"
-s3dirs: "none"
+# required: specify the name of the stack
+# (bora will look for a template under templates/
+# that matches the stack name
+stackname: "test-sqs-thingy"
