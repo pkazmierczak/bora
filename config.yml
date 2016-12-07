@@ -1,0 +1,8 @@
+vaultName: test_vault
+s3bucket: firn-test
+region: "eu-central-1"
+
+# optional
+directories_to_skip: "none"
+files_to_skip: "*.pdf"
+s3dirs: "none"
