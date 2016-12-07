@@ -1,8 +1,6 @@
 # bora—a simple AWS Cloudformation wrapper
 [![Build Status](https://travis-ci.org/pkazmierczak/bora.svg)](https://travis-ci.org/pkazmierczak/bora)
 
-Meh. 
-
 ## Installation
 bora requires AWS SDK for Go as well as some other open source packages. To install all its dependencies, run `go get ./...` in the project directory. 
 
