@@ -1,2 +1,2 @@
 language: go
-install: make
+install: make get-deps all
