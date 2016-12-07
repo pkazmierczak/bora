@@ -13,7 +13,7 @@ import (
 var t = time.Now().Format("2006-01-02-150405")
 
 func awsSession() (error, *session.Session) {
-	sess, err := session.NewSession(&aws.Config{Region: aws.String(reader("region"))})
+	sess, err := session.NewSession(&aws.Config{Region: aws.String(region)})
 	if err != nil {
 		log.Fatal("Failed establishing AWS session ", err)
 		return err, &session.Session{}
