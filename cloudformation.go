@@ -2,24 +2,12 @@ package main
 
 import (
 	"log"
-	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 )
-
-var t = time.Now().Format("2006-01-02-150405")
-
-func awsSession() (error, *session.Session) {
-	sess, err := session.NewSession(&aws.Config{Region: aws.String(region)})
-	if err != nil {
-		log.Fatal("Failed establishing AWS session ", err)
-		return err, &session.Session{}
-	}
-	return nil, sess
-}
 
 func deployStack(t string, session *session.Session) error {
 	svc := cloudformation.New(session)
@@ -30,13 +18,19 @@ func deployStack(t string, session *session.Session) error {
 		TemplateBody:    aws.String(t),
 	}
 
+	updateParams := &cloudformation.UpdateStackInput{
+		StackName:       aws.String(stackname),
+		DisableRollback: aws.Bool(true), // no rollback by default
+		TemplateBody:    aws.String(t),
+	}
+
 	out, err := svc.CreateStack(createParams)
 
 	if err != nil {
 		if awsErr, ok := err.(awserr.Error); ok {
-			log.Fatal("Deploying failed:", awsErr.Code(), awsErr.Message())
+			log.Fatal("Deploying failed: ", awsErr.Code(), awsErr.Message())
 		} else {
-			log.Fatal("Deploying failed", err)
+			log.Fatal("Deploying failed ", err)
 			return err
 		}
 	}
@@ -66,9 +60,9 @@ func terminateStack(session *session.Session) error {
 
 	if err != nil {
 		if awsErr, ok := err.(awserr.Error); ok {
-			log.Fatalln("Deleting failed: ", awsErr.Code(), awsErr.Message())
+			log.Fatal("Deleting failed: ", awsErr.Code(), awsErr.Message())
 		} else {
-			log.Fatalln("Deleting failed ", err)
+			log.Fatal("Deleting failed ", err)
 			return err
 		}
 	}
@@ -84,6 +78,16 @@ func terminateStack(session *session.Session) error {
 		log.Fatal(err)
 	}
 
-	log.Println("Deletion successful:", out)
+	log.Print("Deletion successful: ", out)
 	return nil
 }
+
+// func stackExists(session *session.Session) (error, bool) {
+// 	svc := cloudformation.New(session)
+//
+// 	describeStacksInput := &cloudformation.DescribeStacksInput{
+// 		StackName: aws.String(stackname),
+// 	}
+//
+// 	return nil, false
+// }

@@ -52,6 +52,7 @@ func templateParser(filename string) string {
 		log.Fatal("Error parsing the template file: ", err)
 	}
 
+	// so that we can write to string
 	var doc bytes.Buffer
 	t.Execute(&doc, cfvars)
 	return doc.String()
