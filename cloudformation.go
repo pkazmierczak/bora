@@ -21,7 +21,27 @@ func awsSession() (error, *session.Session) {
 	return nil, sess
 }
 
-func cfnToJson(tmpl string, session *session.Session) error {
+func terminateStack(session *session.Session) error {
+	svc := cloudformation.New(session)
+
+	params := &cloudformation.DeleteStackInput{
+		StackName: aws.String(stackname),
+	}
+
+	_, err := svc.DeleteStack(params)
+
+	if err != nil {
+		if awsErr, ok := err.(awserr.Error); ok {
+			log.Fatalln("Deleting failed: ", awsErr.Code(), awsErr.Message())
+		} else {
+			log.Fatalln("Deleting failed ", err)
+			return err
+		}
+	}
+	return err
+}
+
+func deployStack(t string, session *session.Session) error {
 	// file, err := os.Open(tmpl)
 	// if err != nil {
 	// 	log.Fatal("failed to open template", err)
@@ -31,9 +51,9 @@ func cfnToJson(tmpl string, session *session.Session) error {
 	svc := cloudformation.New(session)
 
 	params := &cloudformation.CreateStackInput{
-		StackName:       aws.String("StackName"),
+		StackName:       aws.String(stackname),
 		DisableRollback: aws.Bool(true), // no rollback by default
-		TemplateBody:    aws.String(tmpl),
+		TemplateBody:    aws.String(t),
 	}
 
 	resp, err := svc.CreateStack(params)

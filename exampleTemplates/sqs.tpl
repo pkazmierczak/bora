@@ -4,7 +4,6 @@ Resources:
   {{ range .queues }}
   MyQueue:
     Type: AWS::SQS::Queue
-    Name: {{ .QueueName }}
     Properties:
-      VisibilityTimeout: value
+      QueueName: {{ .QueueName }}
   {{ end }}

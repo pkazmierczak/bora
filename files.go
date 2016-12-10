@@ -1,7 +1,7 @@
 package main
 
 import (
-	"io"
+	"bytes"
 	"io/ioutil"
 	"log"
 	"text/template"
@@ -41,7 +41,7 @@ func configReader(conf string) {
 	}
 }
 
-func templateParser(filename string, wr io.Writer) {
+func templateParser(filename string) string {
 	b, err := ioutil.ReadFile(filename)
 	if err != nil {
 		log.Fatal("Error reading the template file: ", err)
@@ -51,5 +51,8 @@ func templateParser(filename string, wr io.Writer) {
 	if err != nil {
 		log.Fatal("Error parsing the template file: ", err)
 	}
-	t.Execute(wr, cfvars)
+
+	var doc bytes.Buffer
+	t.Execute(&doc, cfvars)
+	return doc.String()
 }
