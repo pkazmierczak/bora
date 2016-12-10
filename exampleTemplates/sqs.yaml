@@ -1,10 +1,8 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
 Resources:
-  {{ range .Queue.Names }}
   MyQueue:
     Type: AWS::SQS::Queue
-    Name: {{ .Name }}
+    Name: {{ .queue.name }}
     Properties:
       VisibilityTimeout: value
-  {{ end }}

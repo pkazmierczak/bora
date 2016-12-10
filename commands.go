@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -28,6 +29,7 @@ var cmdGenerate = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("Creating a template")
 		configReader(cfgFile)
+		templateParser("exampleTemplates/sqs.yaml", os.Stdout)
 	},
 }
 

@@ -15,6 +15,7 @@ stackname: "test-sqs-thingy"
 # bora requires. 
 CF:
   Queue:
+    Name: exampleQueue
     Names:
       - "pierwsza"
       - "druga"

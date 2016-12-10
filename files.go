@@ -1,12 +1,10 @@
 package main
 
 import (
+	"io"
 	"io/ioutil"
 	"log"
-	"os"
 	"text/template"
-
-	yaml "gopkg.in/yaml.v2"
 
 	"github.com/spf13/viper"
 )
@@ -14,6 +12,9 @@ import (
 // global variables for region and stackname
 var region string
 var stackname string
+
+// cfvars go into a global map
+var cfvars map[string]interface{}
 
 // configReader parses the config YAML file with Viper
 func configReader(conf string) {
@@ -28,29 +29,27 @@ func configReader(conf string) {
 	// Get basic settings
 	region = viper.GetString("region")
 	stackname = viper.GetString("stackname")
+
+	// Get all the values of variables under CF
+	// and put them into a map
+	cfvars = make(map[string]interface{})
+	for _, confvar := range viper.Sub("CF").AllKeys() {
+		if confvar != "" {
+			confval := viper.Get("CF." + confvar)
+			cfvars[confvar] = confval
+		}
+	}
 }
 
-// templateReader loads the meta-template
-// returns a yaml unmarshalled into an empty interface
-func templateReader(filename string) string {
-	// we unmarhshall into an interface
-	var i interface{}
-	yamlFile, err := ioutil.ReadFile(filename)
+func templateParser(filename string, wr io.Writer) {
+	b, err := ioutil.ReadFile(filename)
 	if err != nil {
 		log.Fatal("Error reading the template file: ", err)
 	}
-	yaml.Unmarshal([]byte(yamlFile), &i)
-	m := i.(string) // we case to string, as we don't really care about structure
-	return m
-}
 
-// templateParser reads a yaml meta-template,
-// and interprets it according to keys found in the configuraion
-func templateParser(tbody string, tconf string) {
-	t := template.New("template")
-	t, _ = t.Parse(tbody)
-
-	p := viper.Sub("CF")
-
-	t.Execute(os.Stdout, p)
+	t, err := template.New("template").Parse(string(b))
+	if err != nil {
+		log.Fatal("Error parsing the template file: ", err)
+	}
+	t.Execute(wr, cfvars)
 }
