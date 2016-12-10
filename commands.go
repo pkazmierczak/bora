@@ -6,10 +6,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var CfgFile string
+var cfgFile string
 
 func init() {
-	rootCmd.PersistentFlags().StringVarP(&CfgFile, "config", "c", "config", "path to config file (without extension)")
+	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "config", "path to config file")
 	rootCmd.AddCommand(cmdGenerate, cmdDeploy, cmdTerminate)
 }
 
@@ -30,7 +30,7 @@ var cmdGenerate = &cobra.Command{
 
 func generateRun(cmd *cobra.Command, args []string) {
 	log.Println("Creating a template")
-	yamlParser(CfgFile)
+	yamlParser(cfgFile)
 }
 
 var cmdDeploy = &cobra.Command{
@@ -41,7 +41,7 @@ var cmdDeploy = &cobra.Command{
 
 func deployRun(cmd *cobra.Command, args []string) {
 	log.Println("Deploying a template")
-	yamlParser(CfgFile)
+	yamlParser(cfgFile)
 }
 
 var cmdTerminate = &cobra.Command{
@@ -52,5 +52,5 @@ var cmdTerminate = &cobra.Command{
 
 func terminateRun(cmd *cobra.Command, args []string) {
 	log.Println("Terminating the stack")
-	yamlParser(CfgFile)
+	yamlParser(cfgFile)
 }
