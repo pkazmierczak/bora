@@ -14,8 +14,6 @@ stackname: "test-sqs-thingy"
 # *except* for the top-level CF key, which 
 # bora requires. 
 CF:
-  Queue:
-    Name: exampleQueue
-    Names:
-      - "pierwsza"
-      - "druga"
+  Queues:
+    - QueueName: "pierwsza"
+    - QueueName: "druga"
