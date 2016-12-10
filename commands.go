@@ -25,32 +25,26 @@ var rootCmd = &cobra.Command{
 var cmdGenerate = &cobra.Command{
 	Use:   "generate",
 	Short: "Generates a JSON or YAML template",
-	Run:   generateRun,
-}
-
-func generateRun(cmd *cobra.Command, args []string) {
-	log.Println("Creating a template")
-	yamlParser(cfgFile)
+	Run: func(cmd *cobra.Command, args []string) {
+		log.Println("Creating a template")
+		yamlParser(cfgFile)
+	},
 }
 
 var cmdDeploy = &cobra.Command{
 	Use:   "deploy",
 	Short: "Deploys a stack",
-	Run:   deployRun,
-}
-
-func deployRun(cmd *cobra.Command, args []string) {
-	log.Println("Deploying a template")
-	yamlParser(cfgFile)
+	Run: func(cmd *cobra.Command, args []string) {
+		log.Println("Deploying a template")
+		yamlParser(cfgFile)
+	},
 }
 
 var cmdTerminate = &cobra.Command{
 	Use:   "terminate",
 	Short: "Terminates a stack",
-	Run:   terminateRun,
-}
-
-func terminateRun(cmd *cobra.Command, args []string) {
-	log.Println("Terminating the stack")
-	yamlParser(cfgFile)
+	Run: func(cmd *cobra.Command, args []string) {
+		log.Println("Terminating the stack")
+		yamlParser(cfgFile)
+	},
 }
