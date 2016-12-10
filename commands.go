@@ -8,9 +8,11 @@ import (
 )
 
 var cfgFile string
+var tplFile string
 
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "config", "path to config file")
+	rootCmd.PersistentFlags().StringVarP(&tplFile, "template", "t", "template", "path to template file")
 	rootCmd.AddCommand(cmdGenerate, cmdDeploy, cmdTerminate)
 }
 
@@ -29,7 +31,7 @@ var cmdGenerate = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("Creating a template")
 		configReader(cfgFile)
-		templateParser("exampleTemplates/sqs.yaml", os.Stdout)
+		templateParser(tplFile, os.Stdout)
 	},
 }
 
