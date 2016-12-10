@@ -21,40 +21,7 @@ func awsSession() (error, *session.Session) {
 	return nil, sess
 }
 
-func terminateStack(session *session.Session) error {
-	svc := cloudformation.New(session)
-
-	params := &cloudformation.DeleteStackInput{
-		StackName: aws.String(stackname),
-	}
-
-	req, resp := svc.DeleteStackRequest(params)
-
-	err := req.Send()
-	if err == nil { // resp is now filled
-		for resp != nil {
-			log.Println(resp.String())
-		}
-	}
-
-	if err != nil {
-		if awsErr, ok := err.(awserr.Error); ok {
-			log.Fatalln("Deleting failed: ", awsErr.Code(), awsErr.Message())
-		} else {
-			log.Fatalln("Deleting failed ", err)
-			return err
-		}
-	}
-	return err
-}
-
 func deployStack(t string, session *session.Session) error {
-	// file, err := os.Open(tmpl)
-	// if err != nil {
-	// 	log.Fatal("failed to open template", err)
-	// 	return err
-	// }
-
 	svc := cloudformation.New(session)
 
 	createParams := &cloudformation.CreateStackInput{
@@ -65,31 +32,58 @@ func deployStack(t string, session *session.Session) error {
 
 	out, err := svc.CreateStack(createParams)
 
-	tailer(session)
-
 	if err != nil {
 		if awsErr, ok := err.(awserr.Error); ok {
-			log.Fatalln("Deploying failed:", awsErr.Code(), awsErr.Message())
+			log.Fatal("Deploying failed:", awsErr.Code(), awsErr.Message())
 		} else {
-			log.Fatalln("Deploying failed", err)
+			log.Fatal("Deploying failed", err)
 			return err
 		}
+	}
+
+	describeStacksInput := &cloudformation.DescribeStacksInput{
+		StackName: aws.String(stackname),
+	}
+	if err := svc.WaitUntilStackCreateComplete(describeStacksInput); err != nil {
+		// FIXME this works in so far that we wait until the stack is
+		// completed and capture errors, but it doesn't really tail
+		// cloudroamtion events.
+		log.Fatal(err)
 	}
 
 	log.Println("Deployment successful:", out)
 	return nil
 }
 
-func tailer(session *session.Session) {
+func terminateStack(session *session.Session) error {
 	svc := cloudformation.New(session)
 
-	describeParams := &cloudformation.DescribeStackEventsInput{
+	params := &cloudformation.DeleteStackInput{
 		StackName: aws.String(stackname),
-		NextToken: aws.String("1"),
 	}
 
-	out, _ := svc.DescribeStackEvents(describeParams)
-	for event := range out.StackEvents {
-		log.Println(event)
+	out, err := svc.DeleteStack(params)
+
+	if err != nil {
+		if awsErr, ok := err.(awserr.Error); ok {
+			log.Fatalln("Deleting failed: ", awsErr.Code(), awsErr.Message())
+		} else {
+			log.Fatalln("Deleting failed ", err)
+			return err
+		}
 	}
+
+	describeStacksInput := &cloudformation.DescribeStacksInput{
+		StackName: aws.String(stackname),
+	}
+
+	if err := svc.WaitUntilStackDeleteComplete(describeStacksInput); err != nil {
+		// FIXME this works in so far that we wait until the stack is
+		// completed and capture errors, but it doesn't really tail
+		// cloudroamtion events.
+		log.Fatal(err)
+	}
+
+	log.Println("Deletion successful:", out)
+	return nil
 }

@@ -32,8 +32,8 @@ var generateCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "Generates a JSON or YAML template",
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Println("Generating template")
 		configReader(cfgFile)
+		log.Println("Generating a template for", stackname)
 		tpl := templateParser(tplFile)
 		fmt.Println(tpl)
 	},
@@ -43,8 +43,8 @@ var deployCmd = &cobra.Command{
 	Use:   "deploy",
 	Short: "Deploys a stack",
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Println("Deploying a template")
 		configReader(cfgFile)
+		log.Println("Deploying a template for", stackname)
 		tpl := templateParser(tplFile)
 		_, sess := awsSession()
 		deployStack(tpl, sess)
@@ -55,8 +55,8 @@ var terminateCmd = &cobra.Command{
 	Use:   "terminate",
 	Short: "Terminates a stack",
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Println("Terminating the stack", stackname)
 		configReader(cfgFile)
+		log.Println("Terminating stack", stackname)
 		_, sess := awsSession()
 		terminateStack(sess)
 	},
