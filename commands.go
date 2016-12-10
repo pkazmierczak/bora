@@ -5,18 +5,22 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var cfgFile string
+var stack string
 var tplFile string
 
 func init() {
-	generateCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "config", "path to config file")
-	generateCmd.PersistentFlags().StringVarP(&tplFile, "template", "t", "template", "path to template file")
-	deployCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "config", "path to config file")
-	deployCmd.PersistentFlags().StringVarP(&tplFile, "template", "t", "template", "path to template file")
-	terminateCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "config", "path to config file")
+	generateCmd.Flags().StringVarP(&cfgFile, "config", "c", "config", "path to config file")
+	generateCmd.Flags().StringVarP(&tplFile, "template", "t", "template", "path to template file")
+	deployCmd.Flags().StringVarP(&cfgFile, "config", "c", "config", "path to config file")
+	deployCmd.Flags().StringVarP(&tplFile, "template", "t", "template", "path to template file")
+	terminateCmd.Flags().StringVarP(&stack, "stack", "s", "stack", "name of the stack to terminate")
 	rootCmd.AddCommand(generateCmd, deployCmd, terminateCmd)
+	viper.SetDefault("author", "Piotr Kazmierczak <me@piotrkazmierczak.com>")
+	viper.SetDefault("license", "MIT")
 }
 
 // root command (calls all other commands)
@@ -32,7 +36,7 @@ var generateCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "Generates a JSON or YAML template",
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Println("Creating a template")
+		log.Println("Generating template")
 		configReader(cfgFile)
 		templateParser(tplFile, os.Stdout)
 	},
@@ -51,7 +55,6 @@ var terminateCmd = &cobra.Command{
 	Use:   "terminate",
 	Short: "Terminates a stack",
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Println("Terminating the stack")
-		configReader(cfgFile)
+		log.Println("Terminating the stack", stack)
 	},
 }
