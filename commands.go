@@ -11,9 +11,12 @@ var cfgFile string
 var tplFile string
 
 func init() {
-	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "config", "path to config file")
-	rootCmd.PersistentFlags().StringVarP(&tplFile, "template", "t", "template", "path to template file")
-	rootCmd.AddCommand(cmdGenerate, cmdDeploy, cmdTerminate)
+	generateCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "config", "path to config file")
+	generateCmd.PersistentFlags().StringVarP(&tplFile, "template", "t", "template", "path to template file")
+	deployCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "config", "path to config file")
+	deployCmd.PersistentFlags().StringVarP(&tplFile, "template", "t", "template", "path to template file")
+	terminateCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "config", "path to config file")
+	rootCmd.AddCommand(generateCmd, deployCmd, terminateCmd)
 }
 
 // root command (calls all other commands)
@@ -25,7 +28,7 @@ var rootCmd = &cobra.Command{
 	},
 }
 
-var cmdGenerate = &cobra.Command{
+var generateCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "Generates a JSON or YAML template",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -35,7 +38,7 @@ var cmdGenerate = &cobra.Command{
 	},
 }
 
-var cmdDeploy = &cobra.Command{
+var deployCmd = &cobra.Command{
 	Use:   "deploy",
 	Short: "Deploys a stack",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -44,7 +47,7 @@ var cmdDeploy = &cobra.Command{
 	},
 }
 
-var cmdTerminate = &cobra.Command{
+var terminateCmd = &cobra.Command{
 	Use:   "terminate",
 	Short: "Terminates a stack",
 	Run: func(cmd *cobra.Command, args []string) {
