@@ -32,7 +32,7 @@ func configReader(conf string) {
 
 // templateReader loads the meta-template
 // returns a yaml unmarshalled into an empty interface
-func templateReader(filename string) map[string]interface{} {
+func templateReader(filename string) string {
 	// we unmarhshall into an interface
 	var i interface{}
 	yamlFile, err := ioutil.ReadFile(filename)
@@ -40,8 +40,17 @@ func templateReader(filename string) map[string]interface{} {
 		log.Fatal("Error reading the template file: ", err)
 	}
 	yaml.Unmarshal([]byte(yamlFile), &i)
-	m := i.(map[string]interface{}) // a bit hacky, I know...
+	m := i.(string) // we case to string, as we don't really care about structure
 	return m
 }
 
+// templateParser reads a yaml meta-template,
+// and interprets it according to keys found in the configuraion
+func templateParser(tbody string, tconf string) {
+	t := template.New("template")
+	t, _ = t.Parse(tbody)
+
+	p := viper.Sub("CF")
+
+	t.Execute(os.Stdout, p)
 }
