@@ -28,7 +28,14 @@ func terminateStack(session *session.Session) error {
 		StackName: aws.String(stackname),
 	}
 
-	_, err := svc.DeleteStack(params)
+	req, resp := svc.DeleteStackRequest(params)
+
+	err := req.Send()
+	if err == nil { // resp is now filled
+		for resp != nil {
+			log.Println(resp.String())
+		}
+	}
 
 	if err != nil {
 		if awsErr, ok := err.(awserr.Error); ok {
@@ -50,23 +57,39 @@ func deployStack(t string, session *session.Session) error {
 
 	svc := cloudformation.New(session)
 
-	params := &cloudformation.CreateStackInput{
+	createParams := &cloudformation.CreateStackInput{
 		StackName:       aws.String(stackname),
 		DisableRollback: aws.Bool(true), // no rollback by default
 		TemplateBody:    aws.String(t),
 	}
 
-	resp, err := svc.CreateStack(params)
+	out, err := svc.CreateStack(createParams)
+
+	tailer(session)
 
 	if err != nil {
 		if awsErr, ok := err.(awserr.Error); ok {
-			log.Fatalln("Deploying failed: ", awsErr.Code(), awsErr.Message())
+			log.Fatalln("Deploying failed:", awsErr.Code(), awsErr.Message())
 		} else {
-			log.Fatalln("Deploying failed ", err)
+			log.Fatalln("Deploying failed", err)
 			return err
 		}
 	}
 
-	log.Println("Deployment successful: ", resp)
+	log.Println("Deployment successful:", out)
 	return nil
+}
+
+func tailer(session *session.Session) {
+	svc := cloudformation.New(session)
+
+	describeParams := &cloudformation.DescribeStackEventsInput{
+		StackName: aws.String(stackname),
+		NextToken: aws.String("1"),
+	}
+
+	out, _ := svc.DescribeStackEvents(describeParams)
+	for event := range out.StackEvents {
+		log.Println(event)
+	}
 }
