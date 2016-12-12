@@ -18,11 +18,9 @@ bora requires:
 
 ## Roadmap and status
 bora is in very early stages of development. Currently it correctly
-interprets meta-templates, converts them into CF files, deploys and
-terminates stacks. It is not yet able to update stacks correctly.
-Upcoming features:
+interprets meta-templates, converts them into CF files, deploys (or
+updates )and terminates stacks.  Upcoming features:
 
-- Stack updates;
 - Role assumption/multi-account deployment;
 - Automatic lookup of VPCs, AMIs, subnets and SGs by name; 
 - Tests...

@@ -18,33 +18,63 @@ func deployStack(t string, session *session.Session) error {
 		TemplateBody:    aws.String(t),
 	}
 
-	// updateParams := &cloudformation.UpdateStackInput{
-	// 	StackName:    aws.String(stackname),
-	// 	TemplateBody: aws.String(t),
-	// }
+	updateParams := &cloudformation.UpdateStackInput{
+		StackName:    aws.String(stackname),
+		TemplateBody: aws.String(t),
+	}
 
-	out, err := svc.CreateStack(createParams)
+	if stackExists(session) {
+		log.Println("Stack exists, updating...")
 
-	if err != nil {
-		if awsErr, ok := err.(awserr.Error); ok {
-			log.Fatal("Deploying failed: ", awsErr.Code(), awsErr.Message())
-		} else {
-			log.Fatal("Deploying failed ", err)
-			return err
+		out, err := svc.UpdateStack(updateParams)
+
+		if err != nil {
+			if awsErr, ok := err.(awserr.Error); ok {
+				log.Fatal("Updating stack failed: ", awsErr.Code(), awsErr.Message())
+			} else {
+				log.Fatal("Updating stack failed ", err)
+				return err
+			}
 		}
+
+		describeStacksInput := &cloudformation.DescribeStacksInput{
+			StackName: aws.String(stackname),
+		}
+		if err := svc.WaitUntilStackUpdateComplete(describeStacksInput); err != nil {
+			// FIXME this works in so far that we wait until the stack is
+			// completed and capture errors, but it doesn't really tail
+			// cloudroamtion events.
+			log.Fatal(err)
+		}
+
+		log.Println("Stack update successful:", out)
+
+	} else {
+
+		out, err := svc.CreateStack(createParams)
+
+		if err != nil {
+			if awsErr, ok := err.(awserr.Error); ok {
+				log.Fatal("Deploying failed: ", awsErr.Code(), awsErr.Message())
+			} else {
+				log.Fatal("Deploying failed ", err)
+				return err
+			}
+		}
+
+		describeStacksInput := &cloudformation.DescribeStacksInput{
+			StackName: aws.String(stackname),
+		}
+		if err := svc.WaitUntilStackCreateComplete(describeStacksInput); err != nil {
+			// FIXME this works in so far that we wait until the stack is
+			// completed and capture errors, but it doesn't really tail
+			// cloudroamtion events.
+			log.Fatal(err)
+		}
+
+		log.Println("Deployment successful:", out)
 	}
 
-	describeStacksInput := &cloudformation.DescribeStacksInput{
-		StackName: aws.String(stackname),
-	}
-	if err := svc.WaitUntilStackCreateComplete(describeStacksInput); err != nil {
-		// FIXME this works in so far that we wait until the stack is
-		// completed and capture errors, but it doesn't really tail
-		// cloudroamtion events.
-		log.Fatal(err)
-	}
-
-	log.Println("Deployment successful:", out)
 	return nil
 }
 
@@ -81,12 +111,18 @@ func terminateStack(session *session.Session) error {
 	return nil
 }
 
-// func stackExists(session *session.Session) (error, bool) {
-// 	svc := cloudformation.New(session)
-//
-// 	describeStacksInput := &cloudformation.DescribeStacksInput{
-// 		StackName: aws.String(stackname),
-// 	}
-//
-// 	return nil, false
-// }
+func stackExists(session *session.Session) bool {
+	svc := cloudformation.New(session)
+
+	describeStacksInput := &cloudformation.DescribeStacksInput{
+		StackName: aws.String(stackname),
+	}
+
+	_, err := svc.DescribeStacks(describeStacksInput)
+
+	if err == nil {
+		return true
+	}
+
+	return false
+}
