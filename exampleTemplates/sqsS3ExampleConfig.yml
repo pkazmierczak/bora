@@ -17,3 +17,4 @@ CF:
   Queues:
     - QueueName: "pierwsza"
     - QueueName: "druga"
+  accesscontrol: "PublicRead"

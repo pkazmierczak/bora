@@ -18,11 +18,10 @@ func deployStack(t string, session *session.Session) error {
 		TemplateBody:    aws.String(t),
 	}
 
-	updateParams := &cloudformation.UpdateStackInput{
-		StackName:       aws.String(stackname),
-		DisableRollback: aws.Bool(true), // no rollback by default
-		TemplateBody:    aws.String(t),
-	}
+	// updateParams := &cloudformation.UpdateStackInput{
+	// 	StackName:    aws.String(stackname),
+	// 	TemplateBody: aws.String(t),
+	// }
 
 	out, err := svc.CreateStack(createParams)
 
