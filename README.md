@@ -19,7 +19,7 @@ bora requires:
 ## Roadmap and status
 bora is in very early stages of development. Currently it correctly
 interprets meta-templates, converts them into CF files, deploys (or
-updates )and terminates stacks.  Upcoming features:
+updates) and terminates stacks. Upcoming features:
 
 - Role assumption/multi-account deployment;
 - Automatic lookup of VPCs, AMIs, subnets and SGs by name; 
