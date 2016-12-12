@@ -7,7 +7,7 @@ region: "eu-central-1"
 # Required: specify the name of the stack
 # (bora will look for a template under templates/
 # that matches the stack name
-stackname: "test-sqs-thingy"
+stackname: "test-thingy"
 
 # Stack-specific variables
 # You can define arbitrary keys in here, 
@@ -17,4 +17,4 @@ CF:
   Queues:
     - QueueName: "pierwsza"
     - QueueName: "druga"
-  accesscontrol: "PublicRead"
+  indexdocument: "main.html"

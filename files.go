@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"text/template"
@@ -37,10 +36,7 @@ func configReader(conf string) {
 	for _, confvar := range viper.Sub("CF").AllKeys() {
 		if confvar != "" {
 			confval := viper.Get("CF." + confvar)
-			fmt.Println("Var:", confvar)
-			fmt.Println("Val:", confval)
 			cfvars[confvar] = confval
-
 		}
 	}
 }
