@@ -6,7 +6,7 @@ bora requires AWS SDK for Go as well as some other open source packages
 to compile. To install all its dependencies, run `go get ./...` in the
 project directory. 
 
-Pre-build binaries for Darwin and Linux are available. 
+Pre-build binaries for Darwin and Linux are [available](https://github.com/pkazmierczak/bora/releases). 
 
 ## Usage
 bora requires:
