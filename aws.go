@@ -14,7 +14,7 @@ func awsSession() (error, *session.Session) {
 		log.Fatal("Failed establishing AWS session ", err)
 		return err, &session.Session{}
 	}
-	return nil, sess 
+	return nil, sess    
 }
 
 // helper functions for finding ids of AWS resources
